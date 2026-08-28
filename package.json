@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "bootstrap:admin": "tsx scripts/bootstrap-admin.ts",
+    "bootstrap:admin": "node scripts/bootstrap-admin.mjs",
     "bootstrap": "tsx scripts/bootstrap-local.ts",
     "bootstrap:local": "tsx scripts/bootstrap-local.ts"
   },

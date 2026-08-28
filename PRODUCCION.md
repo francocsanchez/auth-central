@@ -71,6 +71,8 @@ Ejemplo desde Portainer/terminal del contenedor:
 npm run bootstrap:admin
 ```
 
+Ese comando ya no depende de `tsx`, así que funciona dentro del contenedor de producción.
+
 ## Despliegue en Portainer
 
 1. Hacer `git push` al branch principal del repo en GitHub.

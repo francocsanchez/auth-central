@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
@@ -91,12 +91,11 @@ export function PanelShell({
                 >
                   Ver perfil
                 </Link>
-                <Link
-                  href="/logout?returnTo=/login"
-                  className={buttonVariants({ variant: "secondary" })}
-                >
-                  Cerrar sesión
-                </Link>
+                <form action="/logout?returnTo=/login" method="post">
+                  <Button className="w-full" type="submit" variant="secondary">
+                    Cerrar sesión
+                  </Button>
+                </form>
               </div>
             </div>
           </div>

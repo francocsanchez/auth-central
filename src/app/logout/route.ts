@@ -4,11 +4,12 @@ import { getSanitizedAuthHeaders, logAuthDebug } from "@/lib/auth/debug";
 import { auth } from "@/lib/auth/auth";
 import { normalizeReturnTo } from "@/lib/auth/redirects";
 
-export async function GET(request: Request) {
+async function signOutAndRedirect(request: Request, method: "GET" | "POST") {
   const url = new URL(request.url);
   const returnTo = normalizeReturnTo(url.searchParams.get("returnTo"), "/login");
 
   logAuthDebug("logout.request", {
+    method,
     pathname: url.pathname,
     returnTo,
     headers: getSanitizedAuthHeaders(request.headers),
@@ -30,10 +31,28 @@ export async function GET(request: Request) {
   }
 
   logAuthDebug("logout.response", {
+    method,
     pathname: url.pathname,
     returnTo,
     setCookieCount: setCookies.length,
   });
 
   return response;
+}
+
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const returnTo = normalizeReturnTo(url.searchParams.get("returnTo"), "/login");
+
+  logAuthDebug("logout.blocked_get", {
+    pathname: url.pathname,
+    returnTo,
+    headers: getSanitizedAuthHeaders(request.headers),
+  });
+
+  return NextResponse.redirect(returnTo);
+}
+
+export async function POST(request: Request) {
+  return signOutAndRedirect(request, "POST");
 }

@@ -34,20 +34,25 @@ export function LoginForm({ appKey, returnTo, error }: LoginFormProps) {
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
 
-    const result = await authClient.signIn.email({
-      email,
-      password,
-      callbackURL: returnTo,
-      rememberMe: true,
-    });
+    try {
+      const result = await authClient.signIn.email({
+        email,
+        password,
+        callbackURL: returnTo,
+        rememberMe: true,
+      });
 
-    if (result.error) {
-      setMessage(result.error.message ?? "No pudimos iniciar sesión.");
+      if (result.error) {
+        setMessage(result.error.message ?? "No pudimos iniciar sesión.");
+        return;
+      }
+
+      window.location.assign(returnTo);
+    } catch {
+      setMessage("No pudimos iniciar sesión. Revisá la URL pública y las cookies de producción.");
+    } finally {
       setPending(false);
-      return;
     }
-
-    window.location.href = returnTo;
   }
 
   return (

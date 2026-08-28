@@ -27,6 +27,12 @@
 - `ALLOWED_RETURN_TO_ORIGINS`
   - Lista separada por comas con los destinos permitidos luego del login/logout.
 
+Importante sobre cookies en producción:
+
+- Si vas a entrar por `http://IP_DEL_SERVIDOR:32770`, entonces `AUTH_BASE_URL` y `BETTER_AUTH_URL` también deben estar en `http`.
+- Si publicás la app detrás de HTTPS, ambas variables deben usar `https`.
+- La app ahora decide automáticamente si la cookie debe ser `secure` según el protocolo configurado en esas URLs.
+
 ## Variables opcionales para bootstrap inicial
 
 - `BOOTSTRAP_ON_STARTUP`

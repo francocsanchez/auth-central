@@ -70,3 +70,12 @@ export function getAllowedReturnOrigins() {
     ]),
   );
 }
+
+export function shouldUseSecureCookies() {
+  const env = getEnv();
+
+  return (
+    new URL(env.AUTH_BASE_URL).protocol === "https:" &&
+    new URL(env.BETTER_AUTH_URL).protocol === "https:"
+  );
+}

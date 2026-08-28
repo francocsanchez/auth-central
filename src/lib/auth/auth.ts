@@ -3,7 +3,7 @@ import { betterAuth } from "better-auth";
 import { admin } from "better-auth/plugins";
 
 import { mongoClient, mongoDb } from "@/lib/db/mongo";
-import { getEnv, getTrustedOrigins } from "@/lib/env";
+import { getEnv, getTrustedOrigins, shouldUseSecureCookies } from "@/lib/env";
 
 const env = getEnv();
 
@@ -36,7 +36,7 @@ export const auth = betterAuth({
     admin(),
   ],
   advanced: {
-    useSecureCookies: env.NODE_ENV === "production",
+    useSecureCookies: shouldUseSecureCookies(),
     cookiePrefix: "auth-central",
   },
 });

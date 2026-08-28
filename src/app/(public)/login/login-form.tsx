@@ -40,14 +40,19 @@ export function LoginForm({ appKey, returnTo, error }: LoginFormProps) {
         password,
         callbackURL: returnTo,
         rememberMe: true,
+        fetchOptions: {
+          onSuccess(ctx) {
+            if (!ctx.data?.redirect) {
+              window.location.replace(returnTo);
+            }
+          },
+        },
       });
 
       if (result.error) {
         setMessage(result.error.message ?? "No pudimos iniciar sesión.");
         return;
       }
-
-      window.location.assign(returnTo);
     } catch {
       setMessage("No pudimos iniciar sesión. Revisá la URL pública y las cookies de producción.");
     } finally {

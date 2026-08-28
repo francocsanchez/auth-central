@@ -5,10 +5,19 @@ import { auth } from "@/lib/auth/auth";
 
 const handler = toNextJsHandler(auth);
 
-function getSetCookieCount(response: Response) {
-  return typeof response.headers.getSetCookie === "function"
-    ? response.headers.getSetCookie().length
-    : 0;
+function getSetCookieHeaders(response: Response) {
+  if (typeof response.headers.getSetCookie === "function") {
+    return response.headers.getSetCookie();
+  }
+
+  const setCookie = response.headers.get("set-cookie");
+  return setCookie ? [setCookie] : [];
+}
+
+function getSetCookieNames(response: Response) {
+  return getSetCookieHeaders(response)
+    .map((value) => value.split("=")[0]?.trim())
+    .filter(Boolean);
 }
 
 export async function GET(request: Request) {
@@ -25,7 +34,8 @@ export async function GET(request: Request) {
     pathname: new URL(request.url).pathname,
     status: response.status,
     location: response.headers.get("location"),
-    setCookieCount: getSetCookieCount(response),
+    setCookieCount: getSetCookieHeaders(response).length,
+    setCookieNames: getSetCookieNames(response),
   });
 
   return response;
@@ -45,7 +55,8 @@ export async function POST(request: Request) {
     pathname: new URL(request.url).pathname,
     status: response.status,
     location: response.headers.get("location"),
-    setCookieCount: getSetCookieCount(response),
+    setCookieCount: getSetCookieHeaders(response).length,
+    setCookieNames: getSetCookieNames(response),
   });
 
   return response;

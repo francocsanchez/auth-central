@@ -82,7 +82,7 @@ export async function createUserAction(formData: FormData) {
     });
   }
 
-  redirect(`/users/${result.user.id}?success=user_created`);
+  redirect("/users?success=user_created");
 }
 
 export async function updateUserAction(userId: string, formData: FormData) {

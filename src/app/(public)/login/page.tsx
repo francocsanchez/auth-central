@@ -1,6 +1,7 @@
 import { LoginForm } from "@/app/(public)/login/login-form";
 import { listActiveApplications } from "@/lib/access/repository";
 import { normalizeReturnTo } from "@/lib/auth/redirects";
+import { getEnv } from "@/lib/env";
 import { getCentralSessionPayload } from "@/lib/auth/session";
 
 type LoginPageProps = {
@@ -18,13 +19,21 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const returnTo = normalizeReturnTo(returnToParam, session?.user.isCentralAdmin ? "/dashboard" : "/profile");
   const requestedReturnTo = returnToParam ? returnTo : undefined;
   const applications = await listActiveApplications();
-  const applicationOptions = applications
+  const env = getEnv();
+  const applicationOptions = [
+    {
+      key: "auth-central",
+      name: "Auth Central",
+      url: new URL("/profile", env.AUTH_BASE_URL).toString(),
+    },
+    ...applications
     .filter((application) => Boolean(application.url))
     .map((application) => ({
       key: application.key,
       name: application.name,
       url: application.url as string,
-    }));
+    })),
+  ];
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">

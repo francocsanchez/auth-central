@@ -70,12 +70,16 @@ export function ensureCollectionsReady() {
 
 export async function getCollectionCounts() {
   await ensureCollectionsReady();
+  const now = new Date();
 
-  const [users, activeUsers, inactiveUsers, applications] = await Promise.all([
+  const [users, activeUsers, inactiveUsers, applications, activeSessions, connectedUserIds] =
+    await Promise.all([
     authUsersCollection.countDocuments(),
     authUsersCollection.countDocuments({ isActive: { $ne: false } }),
     authUsersCollection.countDocuments({ isActive: false }),
     applicationsCollection.countDocuments(),
+    authSessionsCollection.countDocuments({ expiresAt: { $gt: now } }),
+    authSessionsCollection.distinct("userId", { expiresAt: { $gt: now } }),
   ]);
 
   return {
@@ -83,6 +87,8 @@ export async function getCollectionCounts() {
     activeUsers,
     inactiveUsers,
     applications,
+    activeSessions,
+    connectedUsers: connectedUserIds.length,
   };
 }
 

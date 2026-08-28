@@ -1,16 +1,7 @@
-import { KeyRound, ShieldCheck, UserRound } from "lucide-react";
 import Link from "next/link";
 
 import { FlashAlert } from "@/components/feedback/flash-alert";
 import { SubmitButton } from "@/components/forms/submit-button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,154 +21,117 @@ export default async function NewUserPage({ searchParams }: NewUserPageProps) {
   const params = await searchParams;
 
   return (
-    <div className="min-h-screen bg-muted/30 p-0">
-      <Dialog open>
-        <DialogContent
-          className="top-2 right-2 bottom-2 left-2 max-h-none w-auto max-w-none translate-x-0 translate-y-0 overflow-y-auto p-0 sm:max-w-none"
-          showCloseButton={false}
-        >
-          <div className="border-b p-3">
-            <DialogHeader className="gap-1">
-              <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
-                Usuarios
-              </p>
-              <DialogTitle>Crear usuario central</DialogTitle>
-              <DialogDescription>
-                Alta compacta para identidad, seguridad inicial y accesos por aplicación.
-              </DialogDescription>
-            </DialogHeader>
+    <div className="space-y-4 p-3 lg:p-4">
+      <div className="flex flex-col gap-2 border-b pb-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1">
+          <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
+            Usuarios
+          </p>
+          <h1 className="text-xl font-semibold tracking-tight">Crear usuario central</h1>
+          <p className="text-sm text-muted-foreground">
+            Alta compacta para identidad, seguridad inicial y accesos.
+          </p>
+        </div>
+        <Link href="/users" className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}>
+          Cancelar
+        </Link>
+      </div>
+
+      <FlashAlert
+        success={Array.isArray(params.success) ? params.success[0] : params.success}
+        error={Array.isArray(params.error) ? params.error[0] : params.error}
+      />
+
+      <form action={createUserAction} className="space-y-3">
+        <div className="grid gap-2 border bg-background p-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_180px_140px]">
+          <div className="space-y-1">
+            <Label htmlFor="name">Nombre</Label>
+            <Input id="name" name="name" required placeholder="Nombre y apellido" />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" name="email" type="email" required placeholder="persona@empresa.com" />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="password">Contraseña inicial</Label>
+            <Input id="password" name="password" type="password" minLength={8} required />
+          </div>
+          <div className="space-y-1">
+            <Label>Rol central</Label>
+            <Select name="centralRole" defaultValue="user">
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="user">Usuario</SelectItem>
+                <SelectItem value="admin">Admin central</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <label className="flex items-center gap-2 border px-3 py-2 text-sm xl:col-span-4">
+            <input defaultChecked name="isActive" type="checkbox" className="mt-0.5" />
+            <span>Crear usuario activo</span>
+          </label>
+        </div>
+
+        <div className="space-y-2 border bg-background p-3">
+          <div className="space-y-1">
+            <h2 className="text-sm font-medium">Acceso por aplicación</h2>
+            <p className="text-xs text-muted-foreground">Marcá solo lo necesario desde el arranque.</p>
           </div>
 
-          <div className="space-y-3 p-3">
-            <FlashAlert
-              success={Array.isArray(params.success) ? params.success[0] : params.success}
-              error={Array.isArray(params.error) ? params.error[0] : params.error}
-            />
-
-            <div className="grid gap-px border bg-border sm:grid-cols-3">
-              <div className="space-y-1 bg-background p-2.5">
-                <UserRound className="size-4 text-primary" />
-                <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
-                  Identidad
-                </p>
-                <p className="text-sm text-muted-foreground">Nombre y correo de uso diario.</p>
-              </div>
-              <div className="space-y-1 bg-background p-2.5">
-                <KeyRound className="size-4 text-primary" />
-                <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
-                  Seguridad
-                </p>
-                <p className="text-sm text-muted-foreground">Contraseña inicial y estado.</p>
-              </div>
-              <div className="space-y-1 bg-background p-2.5">
-                <ShieldCheck className="size-4 text-primary" />
-                <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-muted-foreground">
-                  Accesos
-                </p>
-                <p className="text-sm text-muted-foreground">Permisos por aplicación.</p>
-              </div>
-            </div>
-
-            <form action={createUserAction} className="space-y-4">
-              <Card className="border bg-card">
-                <CardHeader className="border-b">
-                  <CardTitle>Base de la cuenta</CardTitle>
-                  <CardDescription>Campos esenciales para dejar la cuenta lista.</CardDescription>
-                </CardHeader>
-                <CardContent className="grid gap-3 pt-3 md:grid-cols-2 xl:grid-cols-4">
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="name">Nombre</Label>
-                    <Input id="name" name="name" required placeholder="Nombre y apellido" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" name="email" type="email" required placeholder="persona@empresa.com" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Contraseña inicial</Label>
-                    <Input id="password" name="password" type="password" minLength={8} required />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Rol central</Label>
-                    <Select name="centralRole" defaultValue="user">
-                      <SelectTrigger>
+          {applications.length ? (
+            <div className="grid gap-px border bg-border">
+              {applications.map((application) => (
+                <div
+                  key={application.key}
+                  className="grid gap-px bg-border md:grid-cols-[minmax(0,1fr)_128px]"
+                >
+                  <label className="flex items-center gap-2 bg-background px-3 py-2 text-sm">
+                    <input
+                      name={`app:${application.key}:enabled`}
+                      type="checkbox"
+                      value="on"
+                      className="mt-0.5"
+                    />
+                    <span className="min-w-0">
+                      <span className="block font-medium leading-none">{application.name}</span>
+                      <span className="block pt-0.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                        {application.key}
+                      </span>
+                    </span>
+                  </label>
+                  <div className="bg-background p-1.5">
+                    <Select name={`app:${application.key}:role`} defaultValue="user">
+                      <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="user">Usuario</SelectItem>
-                        <SelectItem value="admin">Admin central</SelectItem>
+                        <SelectItem value="admin">admin</SelectItem>
+                        <SelectItem value="user">user</SelectItem>
+                        <SelectItem value="viewer">viewer</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <label className="flex items-center gap-3 border bg-muted/20 px-3 py-2 text-sm">
-                    <input defaultChecked name="isActive" type="checkbox" className="mt-0.5" />
-                    <span>Crear usuario activo</span>
-                  </label>
-                </CardContent>
-              </Card>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Primero creá al menos una aplicación para poder asignar accesos.
+            </p>
+          )}
+        </div>
 
-              <Card className="border bg-card">
-                <CardHeader className="border-b">
-                  <CardTitle>Acceso por aplicación</CardTitle>
-                  <CardDescription>Marcá solo lo que necesita desde el arranque.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 pt-3">
-                  {applications.length ? (
-                    <div className="grid gap-px border bg-border">
-                      {applications.map((application) => (
-                        <div
-                          key={application.key}
-                          className="grid gap-px bg-border lg:grid-cols-[minmax(0,1fr)_160px]"
-                        >
-                          <label className="flex items-center gap-3 bg-background px-3 py-2.5 text-sm">
-                            <input
-                              name={`app:${application.key}:enabled`}
-                              type="checkbox"
-                              value="on"
-                              className="mt-0.5"
-                            />
-                            <span className="min-w-0">
-                              <span className="block font-medium">{application.name}</span>
-                              <span className="block font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                                {application.key}
-                              </span>
-                            </span>
-                          </label>
-                          <div className="bg-background p-2">
-                            <Select name={`app:${application.key}:role`} defaultValue="user">
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="admin">admin</SelectItem>
-                                <SelectItem value="user">user</SelectItem>
-                                <SelectItem value="viewer">viewer</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Primero creá al menos una aplicación para poder asignar accesos.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-
-              <div className="flex flex-col-reverse gap-2 border-t p-3 pt-0 sm:flex-row sm:justify-end">
-                <Link href="/users" className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}>
-                  Cancelar
-                </Link>
-                <SubmitButton className="w-full sm:w-auto" pendingLabel="Creando usuario...">
-                  Crear usuario
-                </SubmitButton>
-              </div>
-            </form>
-          </div>
-        </DialogContent>
-      </Dialog>
+        <div className="flex flex-col-reverse gap-2 border-t pt-3 sm:flex-row sm:justify-end">
+          <Link href="/users" className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}>
+            Cancelar
+          </Link>
+          <SubmitButton className="w-full sm:w-auto" pendingLabel="Creando usuario...">
+            Crear usuario
+          </SubmitButton>
+        </div>
+      </form>
     </div>
   );
 }

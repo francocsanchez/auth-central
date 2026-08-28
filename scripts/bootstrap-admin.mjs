@@ -55,7 +55,6 @@ const auth = betterAuth({
   plugins: [admin()],
   advanced: {
     useSecureCookies: true,
-    cookiePrefix: "auth-central",
   },
 });
 

@@ -11,11 +11,19 @@ function getCookieNames(cookieHeader: string | null) {
     .filter(Boolean);
 }
 
+function hasSessionCookie(cookieNames: string[]) {
+  return cookieNames.includes("better-auth.session_token") ||
+    cookieNames.includes("__Secure-better-auth.session_token") ||
+    cookieNames.includes("auth-central.session_token") ||
+    cookieNames.includes("__Secure-auth-central.session_token");
+}
+
 function sanitizeHeaders(input: Headers | Record<string, string | null | undefined>) {
   const read = (name: string) =>
     input instanceof Headers ? input.get(name) : input[name] ?? null;
 
   const cookieHeader = read("cookie");
+  const cookieNames = getCookieNames(cookieHeader);
 
   return {
     host: read("host"),
@@ -29,10 +37,8 @@ function sanitizeHeaders(input: Headers | Record<string, string | null | undefin
     "x-forwarded-prefix": read("x-forwarded-prefix"),
     "x-real-ip": read("x-real-ip"),
     "next-url": read("next-url"),
-    cookieNames: getCookieNames(cookieHeader),
-    hasSessionCookie:
-      getCookieNames(cookieHeader).includes("auth-central.session_token") ||
-      getCookieNames(cookieHeader).includes("__Secure-auth-central.session_token"),
+    cookieNames,
+    hasSessionCookie: hasSessionCookie(cookieNames),
   };
 }
 

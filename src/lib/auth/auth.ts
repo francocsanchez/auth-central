@@ -37,6 +37,5 @@ export const auth = betterAuth({
   ],
   advanced: {
     useSecureCookies: shouldUseSecureCookies(),
-    cookiePrefix: "auth-central",
   },
 });

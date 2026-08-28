@@ -39,6 +39,38 @@
 
 Si activás `BOOTSTRAP_ON_STARTUP=true`, no dejes el password de ejemplo.
 
+## Script manual para crear el admin
+
+Quedó disponible un script del proyecto para asegurar el admin bootstrap manualmente:
+
+```bash
+npm run bootstrap:admin
+```
+
+Ese comando:
+
+- crea el usuario admin si no existe;
+- fuerza rol `admin` e `isActive=true` si ya existe;
+- asegura las aplicaciones base `intranic` y `nfc`;
+- asegura acceso admin del usuario bootstrap a ambas aplicaciones.
+
+Para ejecutarlo dentro del contenedor en producción, el contenedor tiene que tener disponibles las variables:
+
+- `MONGODB_URI`
+- `MONGODB_DB_NAME`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
+- `AUTH_BASE_URL`
+- `BOOTSTRAP_ADMIN_EMAIL`
+- `BOOTSTRAP_ADMIN_NAME`
+- `BOOTSTRAP_ADMIN_PASSWORD`
+
+Ejemplo desde Portainer/terminal del contenedor:
+
+```bash
+npm run bootstrap:admin
+```
+
 ## Despliegue en Portainer
 
 1. Hacer `git push` al branch principal del repo en GitHub.

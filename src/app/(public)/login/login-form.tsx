@@ -1,22 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { authClient } from "@/lib/auth/client";
 
 type LoginFormProps = {
   appKey?: string;
-  returnTo: string;
+  returnTo?: string;
   error?: string;
+  applications: Array<{
+    key: string;
+    name: string;
+    url: string;
+  }>;
 };
 
-export function LoginForm({ appKey, returnTo, error }: LoginFormProps) {
+export function LoginForm({ appKey, returnTo, error, applications }: LoginFormProps) {
+  const defaultApplicationKey =
+    (appKey && applications.some((application) => application.key === appKey) && appKey) ||
+    applications[0]?.key ||
+    "";
   const [pending, setPending] = useState(false);
+  const [selectedAppKey, setSelectedAppKey] = useState(defaultApplicationKey);
   const [message, setMessage] = useState<string | null>(
     error === "inactive"
       ? "Tu cuenta está desactivada. Contactá a un administrador."
@@ -26,6 +43,10 @@ export function LoginForm({ appKey, returnTo, error }: LoginFormProps) {
           ? "La URL de retorno no está permitida."
           : null,
   );
+  const selectedApplication = useMemo(
+    () => applications.find((application) => application.key === selectedAppKey) ?? null,
+    [applications, selectedAppKey],
+  );
 
   async function handleSubmit(formData: FormData) {
     setPending(true);
@@ -33,17 +54,28 @@ export function LoginForm({ appKey, returnTo, error }: LoginFormProps) {
 
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
+    const selectedKey = String(formData.get("applicationKey") ?? "");
+    const application = applications.find((item) => item.key === selectedKey);
+
+    if (!application) {
+      setMessage("Seleccioná una aplicación válida.");
+      setPending(false);
+      return;
+    }
+
+    const callbackURL =
+      appKey && selectedKey === appKey && returnTo ? returnTo : application.url;
 
     try {
       const result = await authClient.signIn.email({
         email,
         password,
-        callbackURL: returnTo,
+        callbackURL,
         rememberMe: true,
         fetchOptions: {
           onSuccess(ctx) {
             if (!ctx.data?.redirect) {
-              window.location.replace(returnTo);
+              window.location.replace(callbackURL);
             }
           },
         },
@@ -62,23 +94,13 @@ export function LoginForm({ appKey, returnTo, error }: LoginFormProps) {
 
   return (
     <Card className="border-border bg-card">
-      <CardHeader className="space-y-4">
+      <CardHeader className="space-y-1">
         <div className="space-y-1">
           <p className="text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground">
-            Acceso central
+            Inicio de sesión
           </p>
-          <CardTitle className="text-3xl leading-tight">
-            Iniciá sesión una vez para entrar a todas las aplicaciones internas.
-          </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
-            Better Auth administra credenciales, sesiones y cookies. Auth Central resuelve el acceso por aplicación.
-          </CardDescription>
+          <CardTitle className="text-3xl leading-tight">Acceso central</CardTitle>
         </div>
-        {appKey ? (
-          <div className="border bg-muted px-3 py-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            Destino actual: {appKey}
-          </div>
-        ) : null}
       </CardHeader>
       <CardContent className="space-y-6">
         {message ? (
@@ -88,6 +110,28 @@ export function LoginForm({ appKey, returnTo, error }: LoginFormProps) {
           </Alert>
         ) : null}
         <form action={handleSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="applicationKey">Aplicación</Label>
+            <Select name="applicationKey" value={selectedAppKey} onValueChange={setSelectedAppKey}>
+              <SelectTrigger id="applicationKey" className="h-10 w-full px-3 text-sm">
+                <SelectValue placeholder="Seleccioná una aplicación" />
+              </SelectTrigger>
+              <SelectContent align="start">
+                {applications.map((application) => (
+                  <SelectItem key={application.key} value={application.key} className="text-sm">
+                    {application.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedApplication ? (
+              <p className="text-xs text-muted-foreground">{selectedApplication.url}</p>
+            ) : (
+              <p className="text-xs text-muted-foreground">
+                No hay aplicaciones activas con URL configurada.
+              </p>
+            )}
+          </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" name="email" type="email" autoComplete="email" required />
@@ -102,7 +146,7 @@ export function LoginForm({ appKey, returnTo, error }: LoginFormProps) {
               required
             />
           </div>
-          <Button className="w-full" type="submit" disabled={pending}>
+          <Button className="w-full" type="submit" disabled={pending || !selectedApplication}>
             {pending ? "Ingresando..." : "Ingresar"}
           </Button>
         </form>

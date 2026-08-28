@@ -1,6 +1,6 @@
 services:
   auth-central:
-    image: ${GHCR_IMAGE}
+    image: ghcr.io/francocsanchez/auth-central:latest
     container_name: auth-central
     restart: unless-stopped
     ports:

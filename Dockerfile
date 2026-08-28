@@ -24,6 +24,7 @@ ENV NODE_ENV=production \
     MONGODB_DB_NAME=auth-central \
     TRUSTED_ORIGINS= \
     ALLOWED_RETURN_TO_ORIGINS= \
+    AUTH_DEBUG=false \
     BOOTSTRAP_ON_STARTUP=false \
     BOOTSTRAP_ADMIN_EMAIL=admin@example.com \
     BOOTSTRAP_ADMIN_NAME="Auth Central Admin" \
@@ -41,7 +42,8 @@ FROM node:20-bookworm-slim AS runner
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     PORT=3000 \
-    HOSTNAME=0.0.0.0
+    HOSTNAME=0.0.0.0 \
+    AUTH_DEBUG=false
 
 WORKDIR /app
 

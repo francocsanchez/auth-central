@@ -36,7 +36,7 @@ export default async function ApplicationsPage({
           </h1>
         </div>
         {session.user.isCentralAdmin ? (
-          <Link className={buttonVariants()} href="/applications/new">
+          <Link className={buttonVariants()} href="/applications/new" prefetch={false}>
             Crear aplicación
           </Link>
         ) : null}
@@ -75,6 +75,7 @@ export default async function ApplicationsPage({
                       <Link
                         className={buttonVariants({ variant: "outline" })}
                         href={`/applications/${application.key}`}
+                        prefetch={false}
                       >
                         Editar
                       </Link>

@@ -116,6 +116,7 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
                     <Link
                       className={buttonVariants({ variant: "outline" })}
                       href={`/users/${user.id}`}
+                      prefetch={false}
                     >
                       Gestionar
                     </Link>

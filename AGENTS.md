@@ -2,6 +2,10 @@
 
 Este repositorio es un proyecto independiente.
 
+## Commit
+
+Siempre devolverme el comando git commit -am "{sugereniciaCommit}"
+
 ## Aislamiento
 
 - No usar decisiones, estilos ni reglas provenientes de otros proyectos.

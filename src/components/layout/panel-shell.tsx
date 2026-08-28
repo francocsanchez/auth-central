@@ -59,6 +59,7 @@ export function PanelShell({
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={false}
                     className={cn(
                       "flex items-center justify-between border px-4 py-3 text-sm font-medium transition-colors",
                       active
@@ -85,6 +86,7 @@ export function PanelShell({
               <div className="flex flex-col gap-2">
                 <Link
                   href="/profile"
+                  prefetch={false}
                   className={buttonVariants({ variant: "outline" })}
                 >
                   Ver perfil

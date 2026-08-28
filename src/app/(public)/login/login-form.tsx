@@ -112,7 +112,11 @@ export function LoginForm({ appKey, returnTo, error, applications }: LoginFormPr
         <form action={handleSubmit} className="space-y-5">
           <div className="space-y-2">
             <Label htmlFor="applicationKey">Aplicación</Label>
-            <Select name="applicationKey" value={selectedAppKey} onValueChange={setSelectedAppKey}>
+            <Select
+              name="applicationKey"
+              value={selectedAppKey}
+              onValueChange={(value) => setSelectedAppKey(value ?? "")}
+            >
               <SelectTrigger id="applicationKey" className="h-10 w-full px-3 text-sm">
                 <SelectValue placeholder="Seleccioná una aplicación" />
               </SelectTrigger>

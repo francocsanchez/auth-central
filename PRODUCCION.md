@@ -26,6 +26,8 @@
   - Lista separada por comas con los orígenes permitidos para integraciones.
 - `ALLOWED_RETURN_TO_ORIGINS`
   - Lista separada por comas con los destinos permitidos luego del login/logout.
+- `AUTH_DEBUG`
+  - Poner `true` temporalmente si necesitás ver diagnóstico detallado de cookies, host y lectura de sesión en los logs del contenedor.
 
 Importante sobre cookies en producción:
 

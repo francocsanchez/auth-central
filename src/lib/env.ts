@@ -12,6 +12,10 @@ const envSchema = z.object({
   MONGODB_DB_NAME: z.string().min(1),
   TRUSTED_ORIGINS: z.string().default(""),
   ALLOWED_RETURN_TO_ORIGINS: z.string().default(""),
+  AUTH_DEBUG: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
   BOOTSTRAP_ON_STARTUP: z
     .enum(["true", "false"])
     .default("false")
@@ -78,4 +82,8 @@ export function shouldUseSecureCookies() {
     new URL(env.AUTH_BASE_URL).protocol === "https:" &&
     new URL(env.BETTER_AUTH_URL).protocol === "https:"
   );
+}
+
+export function isAuthDebugEnabled() {
+  return getEnv().AUTH_DEBUG;
 }

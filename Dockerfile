@@ -8,6 +8,11 @@ FROM base AS deps
 COPY package.json package-lock.json ./
 RUN npm ci
 
+FROM base AS prod-deps
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
 FROM base AS builder
 
 ENV NODE_ENV=production \
@@ -42,6 +47,9 @@ WORKDIR /app
 
 RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid 1001 nextjs
 
+COPY --from=prod-deps /app/package.json ./package.json
+COPY --from=prod-deps /app/package-lock.json ./package-lock.json
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static

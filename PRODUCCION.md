@@ -72,6 +72,7 @@ npm run bootstrap:admin
 ```
 
 Ese comando ya no depende de `tsx`, así que funciona dentro del contenedor de producción.
+Además, la imagen final ahora incluye las dependencias de runtime necesarias para ese script, por lo que no depende solo del bundle `standalone` de Next.js.
 
 ## Despliegue en Portainer
 

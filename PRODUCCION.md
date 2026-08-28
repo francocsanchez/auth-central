@@ -5,6 +5,8 @@
 - Stack recomendado: `auth-central`
 - Puerto externo configurado: `32770`
 - Puerto interno del contenedor: `3000`
+- Red Docker externa compartida: `internal-apps`
+- Hostname interno esperado por otras apps Docker: `http://auth-central:3000`
 - Imagen GHCR esperada: `ghcr.io/<usuario-o-organizacion>/<repositorio>:latest`
 - Este repositorio no tiene un remoto Git configurado en este entorno, por eso el owner/repo exacto debe definirse en GitHub y luego usarse en `GHCR_IMAGE`.
 
@@ -34,6 +36,26 @@ Importante sobre cookies en producción:
 - Si vas a entrar por `http://IP_DEL_SERVIDOR:32770`, entonces `AUTH_BASE_URL` y `BETTER_AUTH_URL` también deben estar en `http`.
 - Si publicás la app detrás de HTTPS, ambas variables deben usar `https`.
 - La app ahora decide automáticamente si la cookie debe ser `secure` según el protocolo configurado en esas URLs.
+- Aunque el contenedor también quede accesible internamente como `http://auth-central:3000` dentro de la red Docker `internal-apps`, no hay que reemplazar `AUTH_BASE_URL` ni `BETTER_AUTH_URL` por esa URL interna. Esas variables deben seguir apuntando a la URL pública real con la que navega el usuario.
+
+## Integración con apps consumidoras en Docker
+
+Si una aplicación consumidora corre en Docker y también está conectada a la red externa `internal-apps`, debe resolver Auth Central usando:
+
+```text
+http://auth-central:3000
+```
+
+Ese hostname interno sirve para llamadas server-to-server entre contenedores dentro de la misma red Docker.
+
+Las variables públicas de Auth Central no cambian por eso. Esta configuración sigue siendo compatible con:
+
+```text
+AUTH_BASE_URL=http://192.168.100.31:32770
+BETTER_AUTH_URL=http://192.168.100.31:32770
+TRUSTED_ORIGINS=http://192.168.100.31:32770,http://192.168.100.31:32772
+ALLOWED_RETURN_TO_ORIGINS=http://192.168.100.31:32770,http://192.168.100.31:32772
+```
 
 ## Variables opcionales para bootstrap inicial
 
@@ -90,7 +112,8 @@ Además, la imagen final ahora incluye las dependencias de runtime necesarias pa
 4. Crear un Stack nuevo.
 5. Pegar el contenido de [docker-compose.yml](/C:/apps/multi-login/docker-compose.yml).
 6. Completar las variables de entorno indicadas arriba.
-7. Hacer deploy del Stack.
+7. Verificar que la red Docker externa `internal-apps` ya exista en el host de Docker/Portainer.
+8. Hacer deploy del Stack.
 
 La app debería quedar disponible en `http://IP_DEL_SERVIDOR:32770`.
 

@@ -5,6 +5,10 @@ services:
     restart: unless-stopped
     ports:
       - "32770:3000"
+    networks:
+      internal-apps:
+        aliases:
+          - auth-central
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -22,3 +26,7 @@ services:
       BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-ChangeMe12345!}
       BOOTSTRAP_INTRANIC_NAME: ${BOOTSTRAP_INTRANIC_NAME:-IntraNIC}
       BOOTSTRAP_NFC_NAME: ${BOOTSTRAP_NFC_NAME:-NFC}
+
+networks:
+  internal-apps:
+    external: true

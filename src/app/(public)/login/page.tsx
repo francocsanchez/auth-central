@@ -3,6 +3,7 @@ import { listActiveApplications } from "@/lib/access/repository";
 import { normalizeReturnTo } from "@/lib/auth/redirects";
 import { getEnv } from "@/lib/env";
 import { getCentralSessionPayload } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 type LoginPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -34,6 +35,24 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       url: application.url as string,
     })),
   ];
+
+  if (session) {
+    const selectedApplication =
+      applicationOptions.find((application) => application.key === appKey) ??
+      applicationOptions[0] ??
+      null;
+
+    if (selectedApplication) {
+      const destination =
+        appKey && selectedApplication.key === appKey && requestedReturnTo
+          ? requestedReturnTo
+          : selectedApplication.url;
+
+      redirect(destination);
+    }
+
+    redirect(session.user.isCentralAdmin ? "/dashboard" : "/profile");
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">

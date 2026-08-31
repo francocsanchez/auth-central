@@ -74,9 +74,7 @@ export function LoginForm({ appKey, returnTo, error, applications }: LoginFormPr
         rememberMe: true,
         fetchOptions: {
           onSuccess(ctx) {
-            if (!ctx.data?.redirect) {
-              window.location.replace(callbackURL);
-            }
+            window.location.replace(ctx.data?.redirect ?? callbackURL);
           },
         },
       });
